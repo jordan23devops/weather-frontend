@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+</head>
+<body>
+    <h1>Weather Dashboard</h1>
+    <form id="weatherForm">
+        <select name="city" id="citySelect">
+            {% for city in cities %}
+                <option value="{{ city.key }}">{{ city.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        document.getElementById('weatherForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/get_weather', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            const resultDiv = document.getElementById('result');
+            if (data.error) {
+                resultDiv.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <h3>Weather in ${data.city}</h3>
+                    <p>Temperature: ${data.temperature}°C</p>
+                    <p>Description: ${data.description}</p>
+                    <p>Humidity: ${data.humidity}%</p>
+                    <p>Wind Speed: ${data.wind_speed} m/s</p>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>
